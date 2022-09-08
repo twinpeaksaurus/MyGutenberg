@@ -1,0 +1,24 @@
+{
+  "name": "mygutenberg",
+  "version": "1.0.0",
+  "description": "a library for storing books and author information",
+  "main": "library-backend.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twinpeaksaurus/MyGutenberg.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/twinpeaksaurus/MyGutenberg/issues"
+  },
+  "homepage": "https://github.com/twinpeaksaurus/MyGutenberg#readme",
+  "dependencies": {
+    "apollo-server": "^3.10.2",
+    "graphql": "^16.6.0",
+    "nodemon": "^2.0.19"
+  }
+}
