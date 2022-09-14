@@ -5,7 +5,7 @@ import { ALL_BOOKS } from './Books'
 const CREATE_BOOK = gql`
 mutation createBook(
   $title: String!
-  $published: Int!
+  $published: String!
   $author: String!
   $genres: [String!]!
   $description: String!
@@ -32,13 +32,13 @@ const NewBook = (props) => {
 
   const [createBook] = useMutation(CREATE_BOOK)
 
-  // {refetchQueries: [{ query: ALL_BOOKS }],}
-  
+ //{refetchQueries: [{ query: ALL_BOOKS }],}
+
   if (!props.show) {
     return null
   }
 
-  const submit = async (event) => {
+  const submit = (event) => {
     event.preventDefault()
 
     console.log(title)
