@@ -32,7 +32,7 @@ const NewBook = (props) => {
 
   const [createBook] = useMutation(CREATE_BOOK)
 
- //{refetchQueries: [{ query: ALL_BOOKS }],}
+  //{refetchQueries: [{ query: ALL_BOOKS }],}
 
   if (!props.show) {
     return null
