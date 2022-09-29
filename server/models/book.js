@@ -9,14 +9,24 @@ const schema = new mongoose.Schema({
     },
     published: {
         type: Number,
+        required: true
     },
     author: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Author'
+        ref: 'Author',
+        required: true
     },
     genres: [
-        { type: String }
-    ]
+        {
+            type: String,
+            required: true
+        }
+    ],
+    description: {
+        type: String,
+        required: true,
+        minlength: 5
+    }
 })
 
 module.exports = mongoose.model('Book', schema)

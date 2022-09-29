@@ -20,6 +20,14 @@ mongoose.connect(MONGODB_URI)
 
 const typeDefs = gql`
 
+type User {
+    username: String!
+    favoriteGenre: String!
+    id: ID!
+}
+type Token {
+    value: String!
+}
 type Book {
     title: String!
     published: String!
@@ -40,6 +48,7 @@ type Query {
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    me: User
   }
 type Mutation {
     addBook(
@@ -49,9 +58,18 @@ type Mutation {
         genres: [String!]!
         description: String!
 
-    ): Book
+    ): Book!
 
     editAuthor( name: String!, born: String!): Author
+
+    createUser(
+        username: String!
+        favoriteGenre: String!
+    ): User
+    login(
+        username: String!
+        password: String!
+    ): Token
 }
 
 `
@@ -61,6 +79,9 @@ const resolvers = {
         bookCount: async () => Book.collection.countDocuments,
         authorCount: async () => Author.collection.countDocuments,
         allBooks: async (root, args) => {
+            if (args.genre) {
+                return Book.find({ genres: { $in: [args.genre] } })
+            }
             return Book.find({})
         },
         allAuthors: async (root, args) => {
@@ -83,45 +104,65 @@ const resolvers = {
     },
 
     Mutation: {
-        addBook: async (root, args) => {
-            currentBooks = Book.find({})
-            if (Book.collection.find((b) => b.title === args.name)) {
-                throw new UserInputError('Title must be unique', {
-                    invalidArgs: args.title
-                })
-            }
-
+        addBook: async (root, args, context) => {
 
             let author = await Author.findOne({ name: args.author })
+
             if (!author) {
-                author = new Author({ name: args.author, born: null, bookCount: 1 })
-                author.save()
-            }
-            else {
+                author = new Author({ name: args.author, bookCount: 1 })
+                try {
+                    await author.save()
+                } catch (error) {
+                    throw new UserInputError(error.message, {
+                        invalidArgs: args,
+                    })
+                }
+            } else {
                 author.bookCount += 1
                 await author.save()
             }
-            const book = new Book({
+
+            let book = new Book({
                 title: args.title,
                 published: args.published,
                 genres: args.genres,
-                author: author
-
+                author: author,
+                description: args.description
             })
-            book.save()
 
+            try {
+                await book.save()
+            } catch (error) {
+                throw new UserInputError(error.message, {
+                    invalidArgs: args,
+                })
+            }
             return book
         },
 
-        editAuthor: (root, args) => {
-            const author = authors.find((a) => a.name === args.name)
-            if (!author) {
-                return null
-            }
+        //Why does the mutation not return anything when tested
+        //in Apollo Server?
+        editAuthor: async (root, args) => {
 
-            const updatedAuthor = { ...author, born: args.born }
-            authors = authors.map((a) => (a.name === args.name ? updatedAuthor : a))
-            return updatedAuthor
+            const author = await Author.findOne({ name: args.name })
+            author.born = args.born
+
+            try {
+                await author.save()
+            }
+            catch {
+                throw new UserInputError(error.message, {
+                    invalidArgs: args,
+                })
+            }
+            // const author = authors.find((a) => a.name === args.name)
+            // if (!author) {
+            //     return null
+            // }
+
+            // const updatedAuthor = { ...author, born: args.born }
+            // authors = authors.map((a) => (a.name === args.name ? updatedAuthor : a))
+            // return updatedAuthor
         }
     }
 
