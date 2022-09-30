@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { ALL_BOOKS } from './Books'
 
 const CREATE_BOOK = gql`
 mutation createBook(
@@ -92,7 +91,8 @@ const NewBook = (props) => {
         </div>
         <div>
           Description
-          <input
+          <textarea
+            type="text"
             value={description}
             onChange={({ target }) => setDescription(target.value)}
           />

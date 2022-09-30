@@ -130,7 +130,7 @@ const resolvers = {
             }
 
             if (!author) {
-                author = new Author({ name: args.author, bookCount: 1 })
+                author = new Author({ name: args.author })
                 try {
                     await author.save()
                 } catch (error) {
@@ -139,7 +139,6 @@ const resolvers = {
                     })
                 }
             } else {
-                author.bookCount += 1
                 await author.save()
             }
 
@@ -167,6 +166,16 @@ const resolvers = {
 
             const author = await Author.findOne({ name: args.name })
             author.born = args.born
+
+            const currentUser = context.currentUser
+
+            if(!currentUser) {
+                throw new AuthenticationError("not authenticated")
+            }
+
+            if(!author) {
+                return null
+            }
 
             try {
                 await author.save()

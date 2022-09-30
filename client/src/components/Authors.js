@@ -7,7 +7,6 @@ const ALL_AUTHORS = gql`
     allAuthors {
       name
       born
-      bookCount
     }
   }
   `
@@ -66,13 +65,11 @@ const Authors = (props) => {
             <tr>
               <th></th>
               <th>Birth Year</th>
-              <th>Books</th>
             </tr>
             {authors.map((a) => (
               <tr key={a.name}>
                 <td>{a.name}</td>
                 <td>{a.born}</td>
-                <td>{a.bookCount}</td>
               </tr>
             ))}
           </tbody>
